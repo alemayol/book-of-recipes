@@ -1,7 +1,7 @@
 {
-  "name": "recipes-web",
+  "name": "Book of Recipes",
   "version": "1.0.0",
-  "description": "Website to save your favorites recipes",
+  "description": "API to save your favorites recipes",
   "type": "module",
   "main": "app.js",
   "scripts": {
