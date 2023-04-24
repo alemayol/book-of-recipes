@@ -2,3 +2,5 @@
 .env
 /public
 /views
+/util
+/typings
