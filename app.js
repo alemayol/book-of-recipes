@@ -58,6 +58,10 @@ app.use(`/auth`, userAuth);
 app.use(`/refresh_token`, refreshAuthentication);
 app.use(`/logout`, logout);
 
+app.get(`/`, (req, res) => {
+  res.status(200).json({ msg: `Welcome to the Book of Recipes API` });
+});
+
 /* Error handling middleware */
 app.use(notFound);
 app.use(errorHandlerMiddleware);
