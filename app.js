@@ -36,7 +36,7 @@ const app = express();
 // app.use(express.static(`public`));
 
 /* Use Extra Packages */
-app.set(`trust proxy`, 1);
+// app.set(`trust proxy`, 1);
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(cors());
 app.use(helmet());
