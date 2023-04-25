@@ -1,5 +1,5 @@
 {
-  "name": "Book of Recipes",
+  "name": "book-of-recipes",
   "version": "1.0.0",
   "description": "API to save your favorites recipes",
   "type": "module",
