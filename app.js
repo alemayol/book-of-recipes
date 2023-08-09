@@ -40,6 +40,7 @@ const app = express();
 /* Credentials to allow for fetching cookies. Must be before CORS */
 app.use(credentials);
 
+app.set("trust proxy", "true");
 /* Use Extra Packages */
 app.use(cookieParser());
 app.use(cors(corsOptions));
