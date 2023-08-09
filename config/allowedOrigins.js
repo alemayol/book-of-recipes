@@ -1,3 +1,3 @@
-const allowedOrigins = ["http://localhost:5173"];
+const allowedOrigins = ["https://main--frolicking-centaur-3c1f61.netlify.app"];
 
 export default allowedOrigins;
