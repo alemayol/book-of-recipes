@@ -8,13 +8,11 @@ const errorHandlerMiddleware = async (err, req, res, next) => {
 
   if (err.name === `CastError`) {
     customError.msg = `No recipe found with the id: ${err.value}`;
-    customError.statusCode = StatusCodes.BAD_REQUEST;
+    customError.statusCode = StatusCodes.NOT_FOUND;
   }
 
   if (err.name === `ValidationError`) {
-    customError.msg = Object.values(err.errors)
-      .map((item) => item.message)
-      .join("; ");
+    customError.msg = Object.values(err.errors).map((item) => item);
     customError.statusCode = StatusCodes.BAD_REQUEST;
   }
 
@@ -22,11 +20,17 @@ const errorHandlerMiddleware = async (err, req, res, next) => {
     customError.msg = `Duplicate value, please change the following fields: ${Object.keys(
       err.keyValue
     )}`;
+    customError.duplicates = [...Object.keys(err.keyValue)];
 
-    customError.statusCode = StatusCodes.BAD_REQUEST;
+    customError.statusCode = StatusCodes.CONFLICT;
   }
 
-  return res.status(customError.statusCode).json({ message: customError.msg });
+  return res.status(customError.statusCode).json({
+    ok: false,
+    status: customError.statusCode,
+    message: customError.msg,
+    duplicates: customError.duplicates || false,
+  });
 };
 
 export default errorHandlerMiddleware;

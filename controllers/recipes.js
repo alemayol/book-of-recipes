@@ -1,10 +1,16 @@
 import Recipe from "../models/Recipe.js";
 import { StatusCodes } from "http-status-codes";
 import { NotFoundError, BadRequestError } from "../errors/index.js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const getAllRecipes = async (req, res) => {
   const allRecipe = await Recipe.find({ createdBy: req.user.userID }).sort(
-    `createdAt`
+    `-createdAt`
   );
 
   return res.status(200).json(allRecipe);
@@ -28,18 +34,35 @@ const getRecipe = async (req, res) => {
 };
 
 const createRecipe = async (req, res) => {
-  const { name, ingredients, preparationSteps } = req.body;
+  const { name, ingredients, preparationSteps, category } = req.body;
+
+  /* Adding recipe image and user id to the req.body to use it to create the recipe */
+
+  if (req.file) {
+    req.body.image = fs.readFileSync(
+      path.join(__dirname, "../Images/", req.file.filename)
+    );
+  }
+
   req.body.createdBy = req.user.userID;
 
   if (
     name === undefined ||
     ingredients === undefined ||
-    preparationSteps === undefined
+    preparationSteps === undefined ||
+    category === undefined
   ) {
     throw new BadRequestError(`Please fill all fields`);
   }
 
+  if (!category)
+    throw new BadRequestError(`${category} is not a valid category`);
+
   const recipe = await Recipe.create({ ...req.body });
+
+  fs.rmSync(path.join(__dirname, "../Images/", req.file.filename), {
+    maxRetries: 2,
+  });
 
   return res.status(StatusCodes.CREATED).json(recipe);
 };
@@ -51,6 +74,18 @@ const updateRecipe = async (req, res) => {
     user: { userID },
   } = req;
 
+  let image;
+
+  if (req.file) {
+    image = fs.readFileSync(
+      path.join(__dirname, "../Images/", req.file.filename)
+    );
+  } else {
+    image = fs.readFileSync(
+      path.join(__dirname, "../defaultImages/no-image.png")
+    );
+  }
+
   if (
     name === undefined ||
     ingredients === undefined ||
@@ -61,11 +96,17 @@ const updateRecipe = async (req, res) => {
 
   const recipe = await Recipe.findOneAndUpdate(
     { _id: recipeID, createdBy: userID },
-    { name, ingredients, preparationSteps },
+    { name, ingredients, preparationSteps, image },
     { runValidators: true, new: true }
   );
 
   if (!recipe) throw new NotFoundError(`No such recipe was found`);
+
+  if (req.file) {
+    fs.rmSync(path.join(__dirname, "../Images/", req.file.filename), {
+      maxRetries: 2,
+    });
+  }
 
   return res.status(StatusCodes.OK).json(recipe);
 };

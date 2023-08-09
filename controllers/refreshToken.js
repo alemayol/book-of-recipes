@@ -1,19 +1,14 @@
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
-import bcrypt from "bcryptjs";
-import cookieParser from "cookie-parser";
-import {
-  BadRequestError,
-  UnauthenticatedError,
-  ForbiddenError,
-} from "../errors/index.js";
+import { UnauthenticatedError, ForbiddenError } from "../errors/index.js";
 
 const refreshAuthentication = async function (req, res, next) {
   const { jwt: refreshToken } = req.cookies;
 
+  res.clearCookie("jwt", { httpOnly: true, secure: true, sameSite: "None" });
+
   if (!refreshToken) throw new UnauthenticatedError(`Missing credentials`);
-  res.clearCookie("jwt", { httpOnly: true });
 
   try {
     const user = await User.findOne({ refreshTokens: refreshToken }).exec();
@@ -49,10 +44,6 @@ const refreshAuthentication = async function (req, res, next) {
           user.refreshTokens = [...newRefreshArr];
           await user.save();
 
-          // return res
-          //   .status(StatusCodes.UNAUTHORIZED)
-          //   .json({ msg: `Expired Token` });
-
           throw new UnauthenticatedError(
             `Session expired, please log in again`
           );
@@ -71,9 +62,14 @@ const refreshAuthentication = async function (req, res, next) {
 
         res.cookie("jwt", newRefreshToken, {
           httpOnly: true,
+          secure: true,
+          sameSite: "None",
           maxAge: 24 * 60 * 60 * 1000,
         });
-        res.status(StatusCodes.OK).json({ accessToken: newAccessToken });
+        res.status(StatusCodes.OK).json({
+          user: { username: user.username },
+          accessToken: newAccessToken,
+        });
       }
     );
   } catch (err) {

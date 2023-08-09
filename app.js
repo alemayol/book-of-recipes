@@ -3,14 +3,13 @@ import "express-async-errors";
 /* Config */
 dotenv.config();
 
+import path from "node:path";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import xss from "xss-clean";
 import expressRateLimit from "express-rate-limit";
-
-/* Path ES module*/
-const { pathname: root } = new URL(`./`, import.meta.url);
+import multer from "multer";
 
 /* Import Routes */
 import recipeRouter from "./routes/recipes.js";
@@ -25,6 +24,12 @@ import cookieParser from "cookie-parser";
 /* Database connection */
 import connectDB from "./db/connect.js";
 
+/* CORS allow cross site origin */
+import credentials from "./middleware/credentials.js";
+
+/* CORS options */
+import corsOptions from "./config/corsOptions.js";
+
 /* Error handlers imports */
 import errorHandlerMiddleware from "./middleware/errorHandler.js";
 import notFound from "./middleware/notFound.js";
@@ -32,28 +37,43 @@ import notFound from "./middleware/notFound.js";
 /* Express App */
 const app = express();
 
-/* Public files */
-// app.use(express.static(`public`));
+/* Credentials to allow for fetching cookies. Must be before CORS */
+app.use(credentials);
 
 /* Use Extra Packages */
-// app.set(`trust proxy`, 1);
-app.use(cookieParser(process.env.COOKIE_SECRET));
-app.use(cors());
+app.use(cookieParser());
+app.use(cors(corsOptions));
 app.use(helmet());
 app.use(xss());
 app.use(
   expressRateLimit({
     windowMs: 1000 * 60 * 15, // 15 Minutes, 30 requests per IP.
-    max: 30,
+    max: 100,
   })
 );
 
 /* Built-in middleware */
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+/* Multer Setup. For managing file uploads */
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "./Images"),
+  filename: (req, file, cb) => {
+    const ext =
+      path.extname(file.originalname) || `.${file.mimetype.split("/")[1]}`;
+    return cb(null, Date.now() + ext);
+  },
+});
+
+const upload = multer({ storage: storage });
+
 /* Routes */
-app.use(`/api`, [authenticationMiddle, recipeRouter]);
+app.use(`/recipes`, [
+  authenticationMiddle,
+  upload.single(`image`),
+  recipeRouter,
+]);
 app.use(`/auth`, userAuth);
 app.use(`/refresh_token`, refreshAuthentication);
 app.use(`/logout`, logout);

@@ -1,12 +1,23 @@
 import mongoose from "mongoose";
+import path from "node:path";
+import fs from "fs";
 import { BadRequestError } from "../errors/index.js";
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+
+const __dirname = path.dirname(__filename);
+
+const defaultImage = fs.readFileSync(
+  path.join(__dirname, "../defaultImages/no-image.png")
+);
 
 function shortArray(arr) {
   return arr && arr.length >= 1;
 }
 
 function longArray(arr) {
-  return arr.length < 5;
+  return arr && arr.length <= 5;
 }
 
 const ingredientsValidators = [
@@ -38,6 +49,37 @@ const RecipeSchema = new mongoose.Schema(
       type: [String],
       default: undefined,
       validate: preparationValidators,
+    },
+    category: {
+      type: String,
+      enum: [
+        "Breakfast",
+        "Lunch",
+        "Dinner",
+        "Thai",
+        "Brunch",
+        "Salads",
+        "Burgers",
+        "Pizza",
+        "Fast Food",
+        "Rice",
+        "Seafood",
+        "Pasta",
+        "Beef",
+        "Pork",
+        "Vegetarian",
+        "Bread",
+        "Sauces",
+        "Baking",
+        "Desserts",
+        "Vegan",
+      ],
+      required: true,
+    },
+    image: {
+      type: Buffer,
+      data: Buffer,
+      default: defaultImage,
     },
     createdBy: {
       type: mongoose.Types.ObjectId, // Tying the job to the users object id (_id in mongoDB)

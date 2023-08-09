@@ -3,22 +3,24 @@ import bcrypt from "bcryptjs";
 import { StatusCodes } from "http-status-codes";
 import { BadRequestError, UnauthenticatedError } from "../errors/index.js";
 
+const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
+
 const register = async (req, res) => {
   const { username, email, password } = req.body;
+
+  if (!PWD_REGEX.test(password)) {
+    throw new BadRequestError(
+      "Password must have 8 to 24 characters. 8 to 24 characters. Must include uppercase and lowercase letters, a number and a special character. Allowed special characters: !, @, #, $, %"
+    );
+  }
 
   const hashPass = await bcrypt.hash(password, 10);
 
   const user = await User.create({ username, email, password: hashPass });
-  //   accessToken = await user.createAccessJWT(),
-  //   refreshToken = await user.createRefreshJWT();
 
-  // res.cookie(`jwt`, refreshToken, {
-  //   httpOnly: true,
-  //   maxAge: 24 * 60 * 60 * 1000,
-  // });
   return res
     .status(StatusCodes.CREATED)
-    .json({ user: { username: user.username } });
+    .json({ user: { username: user.username }, ok: true });
 };
 
 const login = async (req, res) => {
@@ -26,7 +28,7 @@ const login = async (req, res) => {
     { jwt: oldRefreshToken } = req.cookies;
 
   if (!username || !password)
-    throw new BadRequestError(`Please provide an username and password`);
+    throw new BadRequestError(`Please provide both an username and a password`);
 
   const user = await User.findOne({ username });
 
@@ -57,14 +59,16 @@ const login = async (req, res) => {
   user.refreshTokens = [...newRefreshArr, refreshToken];
   await user.save();
 
-  res.cookie(`jwt`, refreshToken, {
+  res.cookie("jwt", refreshToken, {
     httpOnly: true,
+    secure: true,
     maxAge: 24 * 60 * 60 * 1000,
+    sameSite: "None",
   });
 
   return res
     .status(StatusCodes.OK)
-    .json({ user: { name: user.username }, accessToken });
+    .json({ user: { username: user.username }, accessToken, ok: true });
 };
 
 export { register, login };

@@ -10,7 +10,7 @@ const logout = async (req, res) => {
   const user = await User.findOne({ refreshToken });
 
   if (!user) {
-    res.clearCookie("jwt", { httpOnly: true });
+    res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
     return res.sendStatus(StatusCodes.NO_CONTENT);
   }
 
@@ -19,6 +19,7 @@ const logout = async (req, res) => {
   user.refreshTokens = user.refreshTokens.filter((rt) => rt !== refreshToken);
   await user.save();
 
+  res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
   return res.sendStatus(StatusCodes.NO_CONTENT);
 };
 
