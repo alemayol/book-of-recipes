@@ -76,8 +76,6 @@ const updateRecipe = async (req, res) => {
 
   let image;
 
-  console.log(__dirname);
-
   if (req.file) {
     image = fs.readFileSync(
       path.join(__dirname, "../Images/", req.file.filename)
