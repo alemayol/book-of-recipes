@@ -4,8 +4,6 @@ import "express-async-errors";
 dotenv.config();
 
 import path from "node:path";
-import fs from "fs";
-import { fileURLToPath } from "node:url";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -42,16 +40,7 @@ const app = express();
 /* Credentials to allow for fetching cookies. Must be before CORS */
 app.use(credentials);
 
-/* Set up path directory manually since I'm using ESModules */
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 /* Use Extra Packages */
-// app.use(
-//   path.join(__dirname, "/Images"),
-//   express.static(path.join(__dirname, "/Images"))
-// );
 app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(helmet());
