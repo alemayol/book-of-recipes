@@ -24,9 +24,13 @@ The endpoint to log out is /logout
 
 Once logged in, you'll have access to crud operations, the following are the endpoints:
 
-- GET /recipes/dashboard. It returns all recipes created by the user, sorted by creation date.
+- GET /recipes/dashboard.
 
-- POST /recipes/create. Receives the following fields:
+It returns all recipes created by the user, sorted by creation date.
+
+- POST /recipes/create
+
+Receives the following fields:
   1. Image. Not required, will use default if not provided
   2. Name. String
   3. Category
@@ -37,7 +41,7 @@ Returns created recipe
 
 - GET /recipes/:id
   
-  Returns recipe by ID
+Returns recipe by ID
 
 - PATCH /recipes/:id
 
