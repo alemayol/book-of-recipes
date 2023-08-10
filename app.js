@@ -43,6 +43,7 @@ const app = express();
 app.use(credentials);
 
 /* Use Extra Packages */
+app.use("./Images", express.static("./Images"));
 app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(helmet());
@@ -65,7 +66,7 @@ app.use(express.json());
 
 /* Multer Setup. For managing file uploads */
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, path.join(__dirname, "/Images")),
+  destination: (req, file, cb) => cb(null, "./Images"),
   filename: (req, file, cb) => {
     const ext =
       path.extname(file.originalname) || `.${file.mimetype.split("/")[1]}`;
