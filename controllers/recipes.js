@@ -39,7 +39,9 @@ const createRecipe = async (req, res) => {
   /* Adding recipe image and user id to the req.body to use it to create the recipe */
 
   if (req?.file) {
-    req.body.image = fs.readFileSync(path.join("./Images/", req.file.filename));
+    req.body.image = fs.readFileSync(
+      path.join(process.cwd(), "/Images/", req.file.filename)
+    );
   }
 
   req.body.createdBy = req.user.userID;
@@ -59,7 +61,7 @@ const createRecipe = async (req, res) => {
   const recipe = await Recipe.create({ ...req.body });
 
   if (req?.file) {
-    fs.rmSync(path.join("./Images/", req.file.filename), {
+    fs.rmSync(path.join(process.cwd(), "/Images/", req.file.filename), {
       maxRetries: 2,
     });
   }
@@ -78,11 +80,11 @@ const updateRecipe = async (req, res) => {
 
   if (req.file) {
     image = fs.readFileSync(
-      path.join(__dirname, "../Images/", req.file.filename)
+      path.join(process.cwd(), "/Images/", req.file.filename)
     );
   } else {
     image = fs.readFileSync(
-      path.join(__dirname, "../defaultImages/no-image.png")
+      path.join(process.cwd(), "/defaultImages/no-image.png")
     );
   }
 
@@ -103,7 +105,7 @@ const updateRecipe = async (req, res) => {
   if (!recipe) throw new NotFoundError(`No such recipe was found`);
 
   if (req.file) {
-    fs.rmSync(path.join("./Images/", req.file.filename), {
+    fs.rmSync(path.join(process.cwd(), "/Images/", req.file.filename), {
       maxRetries: 2,
     });
   }
