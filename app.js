@@ -42,8 +42,16 @@ const app = express();
 /* Credentials to allow for fetching cookies. Must be before CORS */
 app.use(credentials);
 
+/* Set up path directory manually since I'm using ESModules */
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 /* Use Extra Packages */
-app.use("./Images", express.static("./Images"));
+app.use(
+  path.join(__dirname, "/Images"),
+  express.static(path.join(__dirname, "/Images"))
+);
 app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(helmet());
@@ -55,18 +63,13 @@ app.use(
   })
 );
 
-/* Set up path directory manually since I'm using ESModules */
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 /* Built-in middleware */
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 /* Multer Setup. For managing file uploads */
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "./Images"),
+  destination: (req, file, cb) => cb(null, path.join(__dirname, "/Images")),
   filename: (req, file, cb) => {
     const ext =
       path.extname(file.originalname) || `.${file.mimetype.split("/")[1]}`;

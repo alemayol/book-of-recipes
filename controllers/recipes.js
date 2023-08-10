@@ -38,7 +38,7 @@ const createRecipe = async (req, res) => {
 
   /* Adding recipe image and user id to the req.body to use it to create the recipe */
 
-  if (req.file) {
+  if (req?.file) {
     req.body.image = fs.readFileSync(path.join("./Images/", req.file.filename));
   }
 
@@ -58,9 +58,11 @@ const createRecipe = async (req, res) => {
 
   const recipe = await Recipe.create({ ...req.body });
 
-  fs.rmSync(path.join("./Images/", req.file.filename), {
-    maxRetries: 2,
-  });
+  if (req?.file) {
+    fs.rmSync(path.join("./Images/", req.file.filename), {
+      maxRetries: 2,
+    });
+  }
 
   return res.status(StatusCodes.CREATED).json(recipe);
 };
@@ -75,7 +77,9 @@ const updateRecipe = async (req, res) => {
   let image;
 
   if (req.file) {
-    image = fs.readFileSync(path.join("./Images/", req.file.filename));
+    image = fs.readFileSync(
+      path.join(__dirname, "../Images/", req.file.filename)
+    );
   } else {
     image = fs.readFileSync(
       path.join(__dirname, "../defaultImages/no-image.png")
