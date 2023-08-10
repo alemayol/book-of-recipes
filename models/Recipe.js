@@ -2,14 +2,9 @@ import mongoose from "mongoose";
 import path from "node:path";
 import fs from "fs";
 import { BadRequestError } from "../errors/index.js";
-import { fileURLToPath } from "node:url";
-
-const __filename = fileURLToPath(import.meta.url);
-
-const __dirname = path.dirname(__filename);
 
 const defaultImage = fs.readFileSync(
-  path.join(__dirname, "../defaultImages/no-image.png")
+  path.join(process.cwd(), "/images/no-image.png")
 );
 
 function shortArray(arr) {

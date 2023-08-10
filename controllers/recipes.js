@@ -3,10 +3,6 @@ import { StatusCodes } from "http-status-codes";
 import { NotFoundError, BadRequestError } from "../errors/index.js";
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "node:url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const getAllRecipes = async (req, res) => {
   const allRecipe = await Recipe.find({ createdBy: req.user.userID }).sort(
@@ -83,9 +79,7 @@ const updateRecipe = async (req, res) => {
       path.join(process.cwd(), "/images/", req.file.filename)
     );
   } else {
-    image = fs.readFileSync(
-      path.join(process.cwd(), "/defaultImages/no-image.png")
-    );
+    image = fs.readFileSync(path.join(process.cwd(), "/images/no-image.png"));
   }
 
   if (
