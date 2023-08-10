@@ -69,7 +69,7 @@ app.use(express.json());
 
 /* Multer Setup. For managing file uploads */
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, path.join(process.cwd(), "/Images")),
+  destination: (req, file, cb) => cb(null, path.join(process.cwd(), "/images")),
   filename: (req, file, cb) => {
     const ext =
       path.extname(file.originalname) || `.${file.mimetype.split("/")[1]}`;
