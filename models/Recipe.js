@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 import path from "node:path";
 import fs from "fs";
-import { BadRequestError } from "../errors/index.js";
+/*import { BadRequestError } from "../errors/index.js";*/
 
 const defaultImage = fs.readFileSync(
-  path.join(process.cwd(), "/images/no-image.png")
+  path.join(process.cwd(), "/images/no-image.png"),
 );
 
 function shortArray(arr) {
@@ -84,7 +84,7 @@ const RecipeSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export default mongoose.model(`Recipe`, RecipeSchema);
