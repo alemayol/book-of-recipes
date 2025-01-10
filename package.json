@@ -9,6 +9,9 @@
     "dev": "nodemon app.js",
     "start": "node app"
   },
+  "engines": {
+    "node": "22.4.0"
+  },
   "keywords": [
     "recipes"
   ],
