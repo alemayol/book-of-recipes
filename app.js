@@ -49,7 +49,7 @@ app.use(
   expressRateLimit({
     windowMs: 1000 * 60 * 15, // 15 Minutes, 30 requests per IP.
     max: 100,
-  })
+  }),
 );
 
 /* Built-in middleware */
@@ -58,8 +58,9 @@ app.use(express.json());
 
 /* Multer Setup. For managing file uploads */
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, path.join(process.cwd(), "/images")),
-  filename: (req, file, cb) => {
+  destination: (_req, _file, cb) =>
+    cb(null, path.join(process.cwd(), "/images")),
+  filename: (_req, file, cb) => {
     const ext =
       path.extname(file.originalname) || `.${file.mimetype.split("/")[1]}`;
     return cb(null, Date.now() + ext);
@@ -78,7 +79,7 @@ app.use(`/auth`, userAuth);
 app.use(`/refresh_token`, refreshAuthentication);
 app.use(`/logout`, logout);
 
-app.get(`/`, (req, res) => {
+app.get(`/`, (_req, res) => {
   res.status(200).json({ msg: `Welcome to the Book of Recipes API` });
 });
 
@@ -89,7 +90,7 @@ app.use(errorHandlerMiddleware);
 /* Port */
 const PORT = process.env.PORT || 3000;
 
-const start = (async () => {
+(async () => {
   try {
     await connectDB(process.env.MONGO_URI);
 
