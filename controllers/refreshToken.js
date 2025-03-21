@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
 import { UnauthenticatedError, ForbiddenError } from "../errors/index.js";
 
-const refreshAuthentication = async function (req, res, next) {
+const refreshAuthentication = async function(req, res, next) {
   const { jwt: refreshToken } = req.cookies;
 
   res.clearCookie("jwt", { httpOnly: true, secure: true, sameSite: "None" });
@@ -26,14 +26,14 @@ const refreshAuthentication = async function (req, res, next) {
 
           target.refreshTokens = [];
           await target.save();
-        }
+        },
       );
 
       throw new ForbiddenError(`Authentication failed, please log in`);
     }
 
     const newRefreshArr = user.refreshTokens.filter(
-      (rt) => rt !== refreshToken
+      (rt) => rt !== refreshToken,
     );
 
     jwt.verify(
@@ -45,7 +45,7 @@ const refreshAuthentication = async function (req, res, next) {
           await user.save();
 
           throw new UnauthenticatedError(
-            `Session expired, please log in again`
+            `Session expired, please log in again`,
           );
         }
 
@@ -65,12 +65,13 @@ const refreshAuthentication = async function (req, res, next) {
           secure: true,
           sameSite: "None",
           maxAge: 24 * 60 * 60 * 1000,
+          partitioned: true,
         });
         res.status(StatusCodes.OK).json({
           user: { username: user.username },
           accessToken: newAccessToken,
         });
-      }
+      },
     );
   } catch (err) {
     throw new UnauthenticatedError(`Authentication invalid`);

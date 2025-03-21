@@ -10,7 +10,12 @@ const logout = async (req, res) => {
   const user = await User.findOne({ refreshToken });
 
   if (!user) {
-    res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      sameSite: "None",
+      secure: true,
+      patitioned: true,
+    });
     return res.sendStatus(StatusCodes.NO_CONTENT);
   }
 

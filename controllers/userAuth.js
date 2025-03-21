@@ -10,7 +10,7 @@ const register = async (req, res) => {
 
   if (!PWD_REGEX.test(password)) {
     throw new BadRequestError(
-      "Password must have 8 to 24 characters. 8 to 24 characters. Must include uppercase and lowercase letters, a number and a special character. Allowed special characters: !, @, #, $, %"
+      "Password must have 8 to 24 characters. 8 to 24 characters. Must include uppercase and lowercase letters, a number and a special character. Allowed special characters: !, @, #, $, %",
     );
   }
 
@@ -64,6 +64,7 @@ const login = async (req, res) => {
     secure: true,
     maxAge: 24 * 60 * 60 * 1000,
     sameSite: "None",
+    partitioned: true,
   });
 
   return res
