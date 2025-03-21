@@ -24,7 +24,12 @@ const logout = async (req, res) => {
   user.refreshTokens = user.refreshTokens.filter((rt) => rt !== refreshToken);
   await user.save();
 
-  res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
+  res.clearCookie("jwt", {
+    httpOnly: true,
+    sameSite: "None",
+    secure: true,
+    patitioned: true,
+  });
   return res.sendStatus(StatusCodes.NO_CONTENT);
 };
 
